@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "489360815941",
+    "project_id": "zagrajmywculko",
+    "storage_bucket": "zagrajmywculko.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:489360815941:android:1929777f5d0842a008f02c",
+        "android_client_info": {
+          "package_name": "com.example.zagrajmywculko"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "489360815941-vq72n576t5eb4avdseds2095oiuq7i89.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoLV93wIJ22wACnU_2W-SeuvZ042G5ew8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "489360815941-vq72n576t5eb4avdseds2095oiuq7i89.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
