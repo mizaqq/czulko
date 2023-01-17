@@ -1,5 +1,6 @@
 package com.example.zagrajmywculko
 
+import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.pm.ActivityInfo
@@ -9,14 +10,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.zagrajmywculko.databinding.FragmentSecondBinding
+import com.example.zagrajmywculko.models.Card
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.Source
+import kotlinx.coroutines.awaitAll
+import kotlin.coroutines.*
+import kotlin.random.Random
+import kotlin.system.*
 
 
 /**
@@ -36,20 +43,16 @@ class SecondFragment : Fragment() {
     ): View? {
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
-        var list: List<String> = listOf()
-        readData(object: MyCallback {
-            override fun onCallback(value: List<String>) {
-                Log.d("TAG", list.toString())
-            }
-        })
-
-
         return binding.root
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        readData(binding)
+
+
+
 
         binding.buttonSecond.setOnClickListener {
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
@@ -66,29 +69,21 @@ class SecondFragment : Fragment() {
     }
 }
 
-fun readData(myCallback: MyCallback) {
+fun readData(binding: FragmentSecondBinding) {
     val db = FirebaseFirestore.getInstance()
-    val docRef = db.collection("test")
+    val docRef = db.collection("esnerzy").document("esnerzy")
+    var lista= mutableListOf<Card>()
     docRef.get().addOnCompleteListener { task ->
         if (task.isSuccessful) {
-            val list = ArrayList<String>()
-            for (document in task.result) {
-                val name = document.data["test"].toString()
-                list.add(name)
+            val document = task.result
+            document.data?.let { data ->
+                data.forEach { (key, x) ->
+                    lista.add(Card(key.toInt(), x.toString()))
+                }
             }
-            myCallback.onCallback(list)
         }
-    }
-}
-
-fun addData(name:String){
-    val db = FirebaseFirestore.getInstance()
-    val user: MutableMap<String,Any> = HashMap()
-    user["name"]=name
-    val docRef = db.collection("test")
-    docRef.add(user).addOnSuccessListener {
-        Toast.makeText(this,"", Toast.LENGTH_SHORT).show()
-    }.addOnFailureListener{
-
+        val i = Random.nextInt(0, 5)
+        Log.d(ContentValues.TAG, "Cached document data: ${lista[i]}")
+        binding.textviewSecond.text=lista[i].title
     }
 }

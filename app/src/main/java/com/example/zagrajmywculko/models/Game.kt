@@ -1,31 +1,19 @@
 package com.example.zagrajmywculko.models
 
 
+import android.content.ContentValues
+import android.util.Log
+import android.widget.TextView
+import com.example.zagrajmywculko.MyCallback
+import com.example.zagrajmywculko.R
+import com.example.zagrajmywculko.databinding.ActivityMainBinding
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.random.Random
-
+import android.view.View
 
 
 class Game {
     val points = 0
-    val names: List<Card>
-    var inputNames: List<String> = listOf("","")
-        set(value){
-        field= value
-    }
 
-    init {
-        var chosenId:List<Int> = listOf(0)
-        for(i in 1..10) {
-            chosenId += Random.nextInt(0, 10)
-        }
-        names = makeList(chosenId,inputNames)
-    }
 }
 
-fun makeList(chosenId: List<Int>,inputNames: List<String>): MutableList<Card> {
-    val lista= mutableListOf<Card>()
-    for(i in chosenId){
-        lista+=(Card(i,inputNames[i]))
-    }
-    return lista
-}
