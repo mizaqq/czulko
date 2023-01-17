@@ -3,7 +3,11 @@ package com.example.zagrajmywculko
 import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Context.SENSOR_SERVICE
 import android.content.pm.ActivityInfo
+import android.hardware.Sensor
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +16,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.zagrajmywculko.databinding.FragmentSecondBinding
@@ -37,12 +42,15 @@ class SecondFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
+
+
         return binding.root
 
     }
