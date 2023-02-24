@@ -40,9 +40,8 @@ class FirstFragment : Fragment() {
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
+     }
 }

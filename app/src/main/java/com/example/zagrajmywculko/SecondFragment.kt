@@ -1,34 +1,31 @@
 package com.example.zagrajmywculko
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
-import android.content.Context.SENSOR_SERVICE
 import android.content.pm.ActivityInfo
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.hardware.Sensor
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.TextView
-import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
+import com.example.zagrajmywculko.databinding.ContentMainBinding
 import com.example.zagrajmywculko.databinding.FragmentSecondBinding
-import com.example.zagrajmywculko.models.Card
-import com.google.android.gms.tasks.OnCompleteListener
+import com.example.zagrajmywculko.models.*
+import com.google.android.gms.tasks.Tasks.await
+import com.google.common.base.Functions.compose
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.Source
-import kotlinx.coroutines.awaitAll
-import kotlin.coroutines.*
+import kotlinx.coroutines.*
 import kotlin.random.Random
-import kotlin.system.*
+import kotlin.system.measureTimeMillis
 
 
 /**
@@ -36,6 +33,7 @@ import kotlin.system.*
  */
 class SecondFragment : Fragment() {
 
+    lateinit var viewModel: MainViewModel
     private var _binding: FragmentSecondBinding? = null
 
     // This property is only valid between onCreateView and
@@ -49,8 +47,36 @@ class SecondFragment : Fragment() {
     ): View? {
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
+        viewModel.currentState.observe(viewLifecycleOwner,Observer{
+            if(it==1){
+                Handler().post {
+                    binding.root.background.setColorFilter(Color.parseColor("#00ff00"), PorterDuff.Mode.DARKEN)
+                }
+                Handler().postDelayed({
+                    viewModel.currentState.value=0
+                    viewModel.currentVal.value= ++viewModel.points
+                    readData(binding)
+                    binding.root.background.setColorFilter(Color.parseColor("#ffffff"), PorterDuff.Mode.DARKEN)
+                }, 3000)
 
+            }
+            else if(it == 2){
+                Handler().post {
+                    binding.root.background.setColorFilter(Color.parseColor("#FF0000"), PorterDuff.Mode.DARKEN)
+                }
+                Handler().postDelayed({
+                    viewModel.currentState.value=0
+                    readData(binding)
+                    //binding.root.background.setColorFilter(Color.parseColor("#ffffff"), PorterDuff.Mode.DARKEN)
+                }, 3000)
+            }
+        })
+        viewModel.currentVal.observe(viewLifecycleOwner,Observer{
+            binding.textviewThird.text=it.toString()
+        })
+        changeColors(binding,requireContext())
         return binding.root
 
     }
@@ -59,14 +85,11 @@ class SecondFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         readData(binding)
 
-
-
-
         binding.buttonSecond.setOnClickListener {
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
             requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
             getActivity()?.setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
 
         }
     }
@@ -75,7 +98,32 @@ class SecondFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    fun changeColors(binding: FragmentSecondBinding,context: Context){
+        val gyroscopeSensor = GyroscopeSensor(context)
+        gyroscopeSensor.startListening()
+        gyroscopeSensor.setOnSensorValuesChangedListener { values ->
+            val position = values[1]
+            if (position>3.5f){
+                if(viewModel.currentState.value!=1 && viewModel.currentState.value!=2) {
+                    viewModel.currentState.value = 1
+                }
+            }
+            if (position<-3.5F){
+                if(viewModel.currentState.value!=1 && viewModel.currentState.value!=2) {
+                    viewModel.currentState.value = 2
+                }
+            }
+
+        }
+    }
 }
+suspend fun newData(binding: FragmentSecondBinding){
+    delay(1000)
+    readData(binding)
+    binding.root.background.setColorFilter(Color.parseColor("#000000"), PorterDuff.Mode.DARKEN)
+}
+
+
 
 fun readData(binding: FragmentSecondBinding) {
     val db = FirebaseFirestore.getInstance()
@@ -91,7 +139,37 @@ fun readData(binding: FragmentSecondBinding) {
             }
         }
         val i = Random.nextInt(0, 5)
-        Log.d(ContentValues.TAG, "Cached document data: ${lista[i]}")
+        Log.d(TAG, "Cached document data: ${lista[i]}")
         binding.textviewSecond.text=lista[i].title
     }
 }
+/*
+fun changeColor(binding: FragmentSecondBinding,context: Context){
+    val gyroscopeSensor = GyroscopeSensor(context)
+    gyroscopeSensor.startListening()
+    runBlocking {
+    val job =  async{
+        gyroscopeSensor.setOnSensorValuesChangedListener { values ->
+            val position = values[1]
+            if(position > 0.5f && !isCorrect){
+                isCorrect =true
+                Log.i(TAG,"Values5 $isCorrect")
+                gyroscopeSensor.stopListening()
+            }
+        }
+        delay(10000)
+        Log.i(TAG,"ValuesW2 $isCorrect")
+    }.await()
+    runBlocking {
+        Log.i(TAG,"Values0 $isCorrect")
+        if(isCorrect){
+            Log.i(TAG,"Values6 $isCorrect")
+            binding.root.background.setColorFilter(Color.parseColor("#00ff00"), PorterDuff.Mode.DARKEN)
+        }
+    }
+    }
+}
+*/
+
+
+
