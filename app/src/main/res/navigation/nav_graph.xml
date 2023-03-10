@@ -24,5 +24,17 @@
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_fragmentFinish"
+            app:destination="@id/fragmentFinish" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentFinish"
+        android:name="com.example.zagrajmywculko.FragmentFinish"
+        android:label="fragment_finish"
+        tools:layout="@layout/fragment_finish" >
+        <action
+            android:id="@+id/action_fragmentFinish_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
     </fragment>
 </navigation>
