@@ -109,13 +109,14 @@ class SecondFragment : Fragment() {
         timer.start()
 
 
-        binding.buttonSecond.setOnClickListener {
+       /* binding.buttonSecond.setOnClickListener {
             timer.cancel()
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
             requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
             getActivity()?.setRequestedOrientation(
                 ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
         }
+        */
     }
 
     override fun onDestroyView() {
